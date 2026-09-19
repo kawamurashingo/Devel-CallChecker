@@ -1,0 +1,58 @@
+name: Downstream baseline
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "maint/downstream/**"
+      - ".github/workflows/downstream-baseline.yml"
+
+jobs:
+  baseline:
+    name: Perl ${{ matrix.perl }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perl:
+          - "5.16"
+          - "5.24"
+          - "5.32"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+
+      - name: Install cpanm
+        run: |
+          perl -MApp::cpanminus -e1 2>/dev/null || curl -L https://cpanmin.us | perl - App::cpanminus
+
+      - name: Prepare CPAN 0.009 baseline worktree
+        run: git worktree add "$RUNNER_TEMP/dcc-cpan-0.009" 10d676c6a9879673fd2f2ff33de2da0e86a84f8e
+
+      - name: Run downstream baseline
+        id: downstream
+        continue-on-error: true
+        run: |
+          perl maint/downstream/run-downstream.pl \
+            --candidate "$RUNNER_TEMP/dcc-cpan-0.009"
+
+      - name: Preserve results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: downstream-perl-${{ matrix.perl }}
+          path: maint/downstream/results/
+          if-no-files-found: error
+
+      - name: Report runner status
+        if: steps.downstream.outcome == 'failure'
+        run: |
+          echo "The downstream harness reported one or more non-pass results."
+          echo "Inspect the uploaded artifact and classify failures before updating the reviewed baseline."
