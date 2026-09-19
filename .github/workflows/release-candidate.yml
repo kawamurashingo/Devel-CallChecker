@@ -1,13 +1,22 @@
 name: Release candidate
 on:
   pull_request:
-    paths: ["Build.PL", "Changes", "MANIFEST", "lib/**", "maint/downstream/**", ".github/workflows/release-candidate.yml"]
   workflow_dispatch:
 jobs:
   release-artifact:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Download release candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: release-candidate
+          path: "$RUNNER_TEMP/release-candidate"
+      - name: Extract release candidate
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/candidate"
+          tar -xzf "$RUNNER_TEMP"/release-candidate/Devel-CallChecker-*.tar.gz -C "$RUNNER_TEMP/candidate" --strip-components=1
       - uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: "5.42"
@@ -42,6 +51,7 @@ jobs:
             release-contents.txt
           if-no-files-found: error
   downstream:
+    needs: release-artifact
     name: Downstream candidate / Perl ${{ matrix.perl }}
     runs-on: ubuntu-latest
     strategy:
@@ -60,9 +70,9 @@ jobs:
         continue-on-error: true
         run: |
           if [ "${{ matrix.perl }}" = "5.16" ]; then
-            perl maint/downstream/run-downstream.pl --candidate "$GITHUB_WORKSPACE" --candidate-prereq DynaLoader::Functions
+            perl maint/downstream/run-downstream.pl --candidate "$RUNNER_TEMP/candidate" --candidate-prereq DynaLoader::Functions
           else
-            perl maint/downstream/run-downstream.pl --candidate "$GITHUB_WORKSPACE"
+            perl maint/downstream/run-downstream.pl --candidate "$RUNNER_TEMP/candidate"
           fi
       - name: Preserve cpanm failure logs
         if: always()
@@ -80,8 +90,14 @@ jobs:
           name: downstream-candidate-perl-${{ matrix.perl }}
           path: maint/downstream/results/
           if-no-files-found: error
-      - name: Report runner status
-        if: steps.downstream.outcome == 'failure'
+      - name: Validate runner completion
+        if: always()
         run: |
-          echo "The downstream harness reported non-pass results."
-          echo "Compare them with the committed reviewed baseline before release."
+          if [ ! -f maint/downstream/results/summary.json ]; then
+            echo "The downstream runner failed before producing summary.json."
+            exit 1
+          fi
+          if [ "${{ steps.downstream.outcome }}" = "failure" ]; then
+            echo "The downstream harness reported non-pass results."
+            echo "Compare them with the committed reviewed baseline before release."
+          fi
