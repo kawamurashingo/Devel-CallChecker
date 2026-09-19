@@ -7,7 +7,8 @@
     {
       "distribution": "Enum-Declare",
       "version": "0.08",
-      "release": "Enum-Declare-0.08"
+      "release": "Enum-Declare-0.08",
+      "cpan_target": "LNATION/Enum-Declare-0.08.tar.gz"
     },
     {
       "distribution": "Devel-CallParser",
@@ -18,52 +19,62 @@
     {
       "distribution": "List-Gather",
       "version": "0.14",
-      "release": "List-Gather-0.14"
+      "release": "List-Gather-0.14",
+      "cpan_target": "ETHER/List-Gather-0.14.tar.gz"
     },
     {
       "distribution": "Memoize-Once",
       "version": "0.002",
-      "release": "Memoize-Once-0.002"
+      "release": "Memoize-Once-0.002",
+      "cpan_target": "ZEFRAM/Memoize-Once-0.002.tar.gz"
     },
     {
       "distribution": "Scope-Escape",
       "version": "0.005",
-      "release": "Scope-Escape-0.005"
+      "release": "Scope-Escape-0.005",
+      "cpan_target": "ZEFRAM/Scope-Escape-0.005.tar.gz"
     },
     {
       "distribution": "Scope-Cleanup",
       "version": "0.003",
-      "release": "Scope-Cleanup-0.003"
+      "release": "Scope-Cleanup-0.003",
+      "cpan_target": "ZEFRAM/Scope-Cleanup-0.003.tar.gz"
     },
     {
       "distribution": "Cond-Expr",
       "version": "0.05",
-      "release": "Cond-Expr-0.05"
+      "release": "Cond-Expr-0.05",
+      "cpan_target": "ETHER/Cond-Expr-0.05.tar.gz"
     },
     {
       "distribution": "JSON-XS-Sugar",
       "version": "1.01",
-      "release": "JSON-XS-Sugar-1.01"
+      "release": "JSON-XS-Sugar-1.01",
+      "cpan_target": "MAXMIND/JSON-XS-Sugar-1.01.tar.gz"
     },
     {
       "distribution": "Params-Lazy",
       "version": "0.005",
-      "release": "Params-Lazy-0.005"
+      "release": "Params-Lazy-0.005",
+      "cpan_target": "HUGMEIR/Params-Lazy-0.005.tar.gz"
     },
     {
       "distribution": "B-CallChecker",
       "version": "0.001",
-      "release": "B-CallChecker-0.001"
+      "release": "B-CallChecker-0.001",
+      "cpan_target": "ZEFRAM/B-CallChecker-0.001.tar.gz"
     },
     {
       "distribution": "Parse-Perl",
       "version": "0.007",
-      "release": "Parse-Perl-0.007"
+      "release": "Parse-Perl-0.007",
+      "cpan_target": "ZEFRAM/Parse-Perl-0.007.tar.gz"
     },
     {
       "distribution": "Scope-Escape-Sugar",
       "version": "0.002",
-      "release": "Scope-Escape-Sugar-0.002"
+      "release": "Scope-Escape-Sugar-0.002",
+      "cpan_target": "ZEFRAM/Scope-Escape-Sugar-0.002.tar.gz"
     }
   ]
 }
