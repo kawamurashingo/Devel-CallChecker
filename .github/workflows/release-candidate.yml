@@ -1,0 +1,105 @@
+name: Release candidate
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  release-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.42"
+      - name: Install prerequisites
+        run: |
+          curl -L https://cpanmin.us | perl - App::cpanminus
+          cpanm --notest --installdeps .
+      - name: Build, test, and package
+        run: |
+          perl Build.PL
+          ./Build
+          ./Build test
+          ./Build dist --skip-signature
+      - name: Inspect distribution metadata
+        run: |
+          set -euo pipefail
+          dist=$(ls -1 Devel-CallChecker-*.tar.gz)
+          mkdir "$RUNNER_TEMP/dist"
+          tar -xzf "$dist" -C "$RUNNER_TEMP/dist"
+          root=$(find "$RUNNER_TEMP/dist" -mindepth 1 -maxdepth 1 -type d | head -1)
+          test -f "$root/META.json"
+          test -f "$root/META.yml"
+          test -f "$root/MANIFEST"
+          perl -MJSON::PP -e 'my $f=shift; open my $fh,"<",$f or die $!; local $/; my $m=decode_json(<$fh>); die "version" unless $m->{version} eq "0.010"; die "bugtracker" unless $m->{resources}{bugtracker}{web} eq "https://github.com/kawamurashingo/Devel-CallChecker/issues"; die "repository web" unless $m->{resources}{repository}{web} eq "https://github.com/kawamurashingo/Devel-CallChecker"; die "repository url" unless $m->{resources}{repository}{url} eq "https://github.com/kawamurashingo/Devel-CallChecker.git";' "$root/META.json"
+          tar -tzf "$dist" > release-contents.txt
+          cp "$dist" "$RUNNER_TEMP/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-candidate
+          path: |
+            Devel-CallChecker-*.tar.gz
+            release-contents.txt
+          if-no-files-found: error
+  downstream:
+    needs: release-artifact
+    name: Downstream candidate / Perl ${{ matrix.perl }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        perl: ["5.16", "5.24", "5.32"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download release candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: release-candidate
+          path: ${{ runner.temp }}/release-candidate
+      - name: Extract release candidate
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/candidate"
+          dist=$(find "$RUNNER_TEMP/release-candidate" -type f -name 'Devel-CallChecker-*.tar.gz' -print -quit)
+          test -n "$dist"
+          tar -xzf "$dist" -C "$RUNNER_TEMP/candidate" --strip-components=1
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+      - name: Install cpanm
+        run: perl -MApp::cpanminus -e1 2>/dev/null || curl -L https://cpanmin.us | perl - App::cpanminus
+      - name: Run downstream candidate
+        id: downstream
+        continue-on-error: true
+        run: |
+          if [ "${{ matrix.perl }}" = "5.16" ]; then
+            perl maint/downstream/run-downstream.pl --candidate "$RUNNER_TEMP/candidate" --candidate-prereq DynaLoader::Functions
+          else
+            perl maint/downstream/run-downstream.pl --candidate "$RUNNER_TEMP/candidate"
+          fi
+      - name: Preserve cpanm failure logs
+        if: always()
+        run: |
+          mkdir -p maint/downstream/results/cpanm
+          if [ -d "$HOME/.cpanm/work" ]; then
+            find "$HOME/.cpanm/work" -name build.log -type f -print0 | while IFS= read -r -d '' log; do
+              workdir=$(basename "$(dirname "$log")")
+              cp "$log" "maint/downstream/results/cpanm/$workdir-build.log"
+            done
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: downstream-candidate-perl-${{ matrix.perl }}
+          path: maint/downstream/results/
+          if-no-files-found: error
+      - name: Validate runner completion
+        if: always()
+        run: |
+          if [ ! -f maint/downstream/results/summary.json ]; then
+            echo "The downstream runner failed before producing summary.json."
+            exit 1
+          fi
+          if [ "${{ steps.downstream.outcome }}" = "failure" ]; then
+            echo "The downstream harness reported non-pass results."
+            echo "Compare them with the committed reviewed baseline before release."
+          fi
