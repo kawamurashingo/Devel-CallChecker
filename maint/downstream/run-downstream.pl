@@ -3,11 +3,12 @@ use 5.010;
 use strict;
 use warnings;
 use Config;
-use Cwd qw(abs_path);
+use Cwd qw(abs_path getcwd);
 use File::Path qw(make_path remove_tree);
 use File::Spec;
 use Getopt::Long qw(GetOptions);
 use JSON::PP qw(decode_json);
+use POSIX qw(WIFEXITED WEXITSTATUS WIFSIGNALED WTERMSIG);
 
 my $inventory = File::Spec->catfile(qw(maint downstream inventory.json));
 my $work = File::Spec->catdir(qw(maint downstream .work));
@@ -26,6 +27,8 @@ GetOptions(
 usage() if $help;
 
 -d $candidate or die "candidate directory not found: $candidate\n";
+$candidate = abs_path($candidate);
+my $candidate_version = candidate_version($candidate);
 -f $inventory or die "inventory not found: $inventory\n";
 system("cpanm", "--version") == 0 or die "cpanm is required\n";
 
@@ -52,11 +55,10 @@ my %env = (
 
 run_or_die("candidate.log", \%env,
     "cpanm", "--notest", "--local-lib-contained", $local, "--installdeps", $candidate);
-run_or_die("candidate.log", \%env, $^X, File::Spec->catfile($candidate, "Build.PL"));
-my $build = File::Spec->catfile($candidate, "Build");
-run_or_die("candidate.log", \%env, $build);
-run_or_die("candidate.log", \%env, $build, "test");
-run_or_die("candidate.log", \%env, $build, "install");
+run_in_dir_or_die("candidate.log", \%env, $candidate, $^X, "Build.PL");
+run_in_dir_or_die("candidate.log", \%env, $candidate, File::Spec->catfile(".", "Build"));
+run_in_dir_or_die("candidate.log", \%env, $candidate, File::Spec->catfile(".", "Build"), "test");
+run_in_dir_or_die("candidate.log", \%env, $candidate, File::Spec->catfile(".", "Build"), "install");
 
 my @summary;
 for my $entry (@entries) {
@@ -64,7 +66,7 @@ for my $entry (@entries) {
     my $release = $entry->{release};
     my $target = $entry->{cpan_target} || $dist;
     my $log = safe_name($dist) . ".log";
-    my $rc = run($log, \%env, "cpanm", "--local-lib-contained", $local, "--test-only", $target);
+    my $rc = run($log, \%env, undef, "cpanm", "--local-lib-contained", $local, "--test-only", $target);
     push @summary, {
         distribution => $dist,
         release => $release,
@@ -72,7 +74,7 @@ for my $entry (@entries) {
         perl => sprintf("%vd", $^V),
         os => $^O,
         archname => $Config{archname},
-        candidate_version => "0.009",
+        candidate_version => $candidate_version,
         baseline_tag => $data->{baseline_tag},
         status => $rc == 0 ? "pass" : "blocked",
         exit_code => $rc,
@@ -95,12 +97,18 @@ exit(grep({ $_->{status} ne "pass" } @summary) ? 1 : 0);
 
 sub run_or_die {
     my ($log, $env, @cmd) = @_;
-    my $rc = run($log, $env, @cmd);
+    my $rc = run($log, $env, undef, @cmd);
+    die "command failed (exit $rc); see $results/$log\n" if $rc;
+}
+
+sub run_in_dir_or_die {
+    my ($log, $env, $dir, @cmd) = @_;
+    my $rc = run($log, $env, $dir, @cmd);
     die "command failed (exit $rc); see $results/$log\n" if $rc;
 }
 
 sub run {
-    my ($log, $env, @cmd) = @_;
+    my ($log, $env, $dir, @cmd) = @_;
     my $path = File::Spec->catfile($results, $log);
     open my $fh, ">>", $path or die "$path: $!";
     print {$fh} "\n\$ ", join(" ", map { shell_quote($_) } @cmd), "\n";
@@ -109,12 +117,27 @@ sub run {
     my $pid = fork();
     die "fork failed: $!" unless defined $pid;
     if ($pid == 0) {
+        chdir $dir or die "chdir $dir: $!" if defined $dir;
         open STDOUT, ">>", $path or die "$path: $!";
         open STDERR, ">&", \*STDOUT or die "dup stdout: $!";
         exec @cmd or die "exec $cmd[0]: $!";
     }
-    waitpid($pid, 0);
-    return $? == -1 ? 255 : ($? >> 8);
+    my $waited = waitpid($pid, 0);
+    return 255 if $waited == -1;
+    my $status = $?;
+    return 128 + WTERMSIG($status) if WIFSIGNALED($status);
+    return WEXITSTATUS($status) if WIFEXITED($status);
+    return 255;
+}
+
+sub candidate_version {
+    my ($dir) = @_;
+    my $pm = File::Spec->catfile($dir, qw(lib Devel CallChecker.pm));
+    open my $fh, "<", $pm or die "$pm: $!";
+    while (my $line = <$fh>) {
+        return $1 if $line =~ /\bour\s+\$VERSION\s*=\s*["']([^"']+)["']/;
+    }
+    die "could not determine candidate version from $pm\n";
 }
 
 sub safe_name {
