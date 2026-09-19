@@ -25,6 +25,7 @@ The harness separates discovery from execution. `inventory.json` is a reviewed, 
 - `inventory.json`: reviewed direct-dependent snapshot.
 - `run-downstream.pl`: conservative runner.
 - `results/`: generated summaries and logs.
+- `baselines/`: reviewed, classified baseline snapshots suitable for comparison with future candidates.
 
 The initial runner uses `cpanm`. Run it in a disposable workspace or CI job, not against a valuable global Perl installation.
 
@@ -36,3 +37,7 @@ A non-pass result is provisional until the same downstream is tested against the
 
 
 The runner passes the CPAN distribution name (for example `Devel-CallParser`) to `cpanm`. A release label such as `Devel-CallParser-0.004` is metadata, not a valid generic cpanm lookup target. A future inventory can provide an explicit `cpan_target` when an exact author/path tarball is required.
+
+## Recorded baselines
+
+- `baselines/perl-5.40.1-darwin.json`: Perl 5.40.1 on `darwin-thread-multi-2level`; 8 pass and 4 existing failures reproduced against `cpan-0.009`.
