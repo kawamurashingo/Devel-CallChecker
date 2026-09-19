@@ -4,17 +4,66 @@
   "source": "MetaCPAN direct reverse dependencies of Devel::CallChecker",
   "baseline_tag": "cpan-0.009",
   "distributions": [
-    {"distribution":"Enum-Declare","version":"0.08","release":"Enum-Declare-0.08"},
-    {"distribution":"Devel-CallParser","version":"0.004","release":"Devel-CallParser-0.004"},
-    {"distribution":"List-Gather","version":"0.14","release":"List-Gather-0.14"},
-    {"distribution":"Memoize-Once","version":"0.002","release":"Memoize-Once-0.002"},
-    {"distribution":"Scope-Escape","version":"0.005","release":"Scope-Escape-0.005"},
-    {"distribution":"Scope-Cleanup","version":"0.003","release":"Scope-Cleanup-0.003"},
-    {"distribution":"Cond-Expr","version":"0.05","release":"Cond-Expr-0.05"},
-    {"distribution":"JSON-XS-Sugar","version":"1.01","release":"JSON-XS-Sugar-1.01"},
-    {"distribution":"Params-Lazy","version":"0.005","release":"Params-Lazy-0.005"},
-    {"distribution":"B-CallChecker","version":"0.001","release":"B-CallChecker-0.001"},
-    {"distribution":"Parse-Perl","version":"0.007","release":"Parse-Perl-0.007"},
-    {"distribution":"Scope-Escape-Sugar","version":"0.002","release":"Scope-Escape-Sugar-0.002"}
+    {
+      "distribution": "Enum-Declare",
+      "version": "0.08",
+      "release": "Enum-Declare-0.08"
+    },
+    {
+      "distribution": "Devel-CallParser",
+      "version": "0.004",
+      "release": "Devel-CallParser-0.004",
+      "cpan_target": "LNATION/Devel-CallParser-0.004.tar.gz"
+    },
+    {
+      "distribution": "List-Gather",
+      "version": "0.14",
+      "release": "List-Gather-0.14"
+    },
+    {
+      "distribution": "Memoize-Once",
+      "version": "0.002",
+      "release": "Memoize-Once-0.002"
+    },
+    {
+      "distribution": "Scope-Escape",
+      "version": "0.005",
+      "release": "Scope-Escape-0.005"
+    },
+    {
+      "distribution": "Scope-Cleanup",
+      "version": "0.003",
+      "release": "Scope-Cleanup-0.003"
+    },
+    {
+      "distribution": "Cond-Expr",
+      "version": "0.05",
+      "release": "Cond-Expr-0.05"
+    },
+    {
+      "distribution": "JSON-XS-Sugar",
+      "version": "1.01",
+      "release": "JSON-XS-Sugar-1.01"
+    },
+    {
+      "distribution": "Params-Lazy",
+      "version": "0.005",
+      "release": "Params-Lazy-0.005"
+    },
+    {
+      "distribution": "B-CallChecker",
+      "version": "0.001",
+      "release": "B-CallChecker-0.001"
+    },
+    {
+      "distribution": "Parse-Perl",
+      "version": "0.007",
+      "release": "Parse-Perl-0.007"
+    },
+    {
+      "distribution": "Scope-Escape-Sugar",
+      "version": "0.002",
+      "release": "Scope-Escape-Sugar-0.002"
+    }
   ]
 }
