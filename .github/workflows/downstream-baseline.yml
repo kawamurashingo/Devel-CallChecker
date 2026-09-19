@@ -40,8 +40,14 @@ jobs:
         id: downstream
         continue-on-error: true
         run: |
-          perl maint/downstream/run-downstream.pl \
-            --candidate "$RUNNER_TEMP/dcc-cpan-0.009"
+          if [ "${{ matrix.perl }}" = "5.16" ]; then
+            perl maint/downstream/run-downstream.pl \
+              --candidate "$RUNNER_TEMP/dcc-cpan-0.009" \
+              --candidate-prereq DynaLoader::Functions
+          else
+            perl maint/downstream/run-downstream.pl \
+              --candidate "$RUNNER_TEMP/dcc-cpan-0.009"
+          fi
 
       - name: Preserve cpanm failure logs
         if: always()
