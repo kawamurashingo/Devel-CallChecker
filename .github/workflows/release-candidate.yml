@@ -37,7 +37,7 @@ jobs:
         with:
           name: release-candidate
           path: |
-            ${{ runner.temp }}/Devel-CallChecker-*.tar.gz
+            Devel-CallChecker-*.tar.gz
             release-contents.txt
           if-no-files-found: error
   downstream:
@@ -59,7 +59,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir "$RUNNER_TEMP/candidate"
-          tar -xzf "$RUNNER_TEMP"/release-candidate/Devel-CallChecker-*.tar.gz -C "$RUNNER_TEMP/candidate" --strip-components=1
+          dist=$(find "$RUNNER_TEMP/release-candidate" -type f -name 'Devel-CallChecker-*.tar.gz' -print -quit)
+          test -n "$dist"
+          tar -xzf "$dist" -C "$RUNNER_TEMP/candidate" --strip-components=1
       - uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
