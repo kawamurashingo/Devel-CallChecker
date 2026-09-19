@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-09-19",
+  "environment": {
+    "perl": "5.16.3",
+    "os": "linux",
+    "archname": "x86_64-linux"
+  },
+  "baseline_tag": "cpan-0.009",
+  "summary": {
+    "pass": 10,
+    "existing_failure": 2,
+    "candidate_regression": 0,
+    "blocked": 0
+  },
+  "results": [
+    {"distribution":"Enum-Declare","release":"Enum-Declare-0.08","status":"existing_failure"},
+    {"distribution":"Devel-CallParser","release":"Devel-CallParser-0.004","status":"pass"},
+    {"distribution":"List-Gather","release":"List-Gather-0.14","status":"pass"},
+    {"distribution":"Memoize-Once","release":"Memoize-Once-0.002","status":"pass"},
+    {"distribution":"Scope-Escape","release":"Scope-Escape-0.005","status":"pass"},
+    {"distribution":"Scope-Cleanup","release":"Scope-Cleanup-0.003","status":"pass"},
+    {"distribution":"Cond-Expr","release":"Cond-Expr-0.05","status":"pass"},
+    {"distribution":"JSON-XS-Sugar","release":"JSON-XS-Sugar-1.01","status":"existing_failure"},
+    {"distribution":"Params-Lazy","release":"Params-Lazy-0.005","status":"pass"},
+    {"distribution":"B-CallChecker","release":"B-CallChecker-0.001","status":"pass"},
+    {"distribution":"Parse-Perl","release":"Parse-Perl-0.007","status":"pass"},
+    {"distribution":"Scope-Escape-Sugar","release":"Scope-Escape-Sugar-0.002","status":"pass"}
+  ],
+  "notes": [
+    "The candidate is the unmodified Devel-CallChecker 0.009 import commit; therefore non-pass downstream results in this run are baseline existing failures, not candidate regressions.",
+    "Enum-Declare fails because its Object::Proto dependency fails its own tests on this Perl 5.16.3 environment; Devel-CallParser itself tests successfully.",
+    "JSON-XS-Sugar fails its own test suite on this Perl 5.16.3 environment.",
+    "The CI runner explicitly preinstalls DynaLoader::Functions after harness work-directory initialization to work around legacy dependency discovery on Perl 5.16; no production metadata is changed."
+  ]
+}
