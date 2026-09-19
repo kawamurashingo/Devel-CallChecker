@@ -62,11 +62,13 @@ my @summary;
 for my $entry (@entries) {
     my $dist = $entry->{distribution};
     my $release = $entry->{release};
+    my $target = $entry->{cpan_target} || $dist;
     my $log = safe_name($dist) . ".log";
-    my $rc = run($log, \%env, "cpanm", "--local-lib-contained", $local, "--test-only", $release);
+    my $rc = run($log, \%env, "cpanm", "--local-lib-contained", $local, "--test-only", $target);
     push @summary, {
         distribution => $dist,
         release => $release,
+        cpan_target => $target,
         perl => sprintf("%vd", $^V),
         os => $^O,
         archname => $Config{archname},
