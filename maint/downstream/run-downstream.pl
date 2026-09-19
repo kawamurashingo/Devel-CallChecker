@@ -14,6 +14,7 @@ my $inventory = File::Spec->catfile(qw(maint downstream inventory.json));
 my $work = File::Spec->catdir(qw(maint downstream .work));
 my $results = File::Spec->catdir(qw(maint downstream results));
 my ($only, $help);
+my @candidate_prereqs;
 my $candidate = abs_path(".");
 
 GetOptions(
@@ -22,6 +23,7 @@ GetOptions(
     "results=s" => \$results,
     "only=s" => \$only,
     "candidate=s" => \$candidate,
+    "candidate-prereq=s@" => \@candidate_prereqs,
     "help" => \$help,
 ) or usage();
 usage() if $help;
@@ -59,6 +61,11 @@ my %env = (
     PERL_MB_OPT => "--install_base $local",
     PERL_MM_OPT => "INSTALL_BASE=$local",
 );
+
+for my $prereq (@candidate_prereqs) {
+    run_or_die("candidate.log", \%env,
+        "cpanm", "--notest", "--local-lib-contained", $local, $prereq);
+}
 
 run_or_die("candidate.log", \%env,
     "cpanm", "--notest", "--local-lib-contained", $local, "--installdeps", $candidate);
@@ -162,6 +169,6 @@ sub shell_quote {
 }
 
 sub usage {
-    print "Usage: $0 [--only Distribution] [--candidate DIR] [--inventory FILE] [--work DIR] [--results DIR]\n";
+    print "Usage: $0 [--only Distribution] [--candidate DIR] [--candidate-prereq Module] [--inventory FILE] [--work DIR] [--results DIR]\n";
     exit 0;
 }
