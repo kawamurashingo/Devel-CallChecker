@@ -36,6 +36,11 @@ jobs:
       - name: Prepare CPAN 0.009 baseline worktree
         run: git worktree add "$RUNNER_TEMP/dcc-cpan-0.009" 10d676c6a9879673fd2f2ff33de2da0e86a84f8e
 
+      - name: Install Devel::CallChecker baseline prerequisites
+        if: matrix.perl == '5.16'
+        run: |
+          cpanm --notest --local-lib-contained maint/downstream/.work/local DynaLoader::Functions
+
       - name: Run downstream baseline
         id: downstream
         continue-on-error: true
