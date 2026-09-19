@@ -11,7 +11,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-candidate
-          path: "$RUNNER_TEMP/release-candidate"
+          path: ${{ runner.temp }}/release-candidate
       - name: Extract release candidate
         run: |
           set -euo pipefail
