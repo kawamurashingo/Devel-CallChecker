@@ -34,7 +34,7 @@ jobs:
           perl -MApp::cpanminus -e1 2>/dev/null || curl -L https://cpanmin.us | perl - App::cpanminus
 
       - name: Prepare CPAN 0.009 baseline worktree
-        run: git worktree add "$RUNNER_TEMP/dcc-cpan-0.009" cpan-0.009
+        run: git worktree add "$RUNNER_TEMP/dcc-cpan-0.009" 10d676c6a9879673fd2f2ff33de2da0e86a84f8e
 
       - name: Run downstream baseline
         id: downstream
