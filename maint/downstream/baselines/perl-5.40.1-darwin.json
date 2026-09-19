@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-09-19",
+  "environment": {
+    "perl": "5.40.1",
+    "os": "darwin",
+    "archname": "darwin-thread-multi-2level"
+  },
+  "baseline_tag": "cpan-0.009",
+  "summary": {
+    "pass": 8,
+    "existing_failure": 4,
+    "candidate_regression": 0,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "distribution": "Enum-Declare",
+      "release": "Enum-Declare-0.08",
+      "status": "pass"
+    },
+    {
+      "distribution": "Devel-CallParser",
+      "release": "Devel-CallParser-0.004",
+      "status": "pass"
+    },
+    {
+      "distribution": "List-Gather",
+      "release": "List-Gather-0.14",
+      "status": "pass"
+    },
+    {
+      "distribution": "Memoize-Once",
+      "release": "Memoize-Once-0.002",
+      "status": "pass"
+    },
+    {
+      "distribution": "Scope-Escape",
+      "release": "Scope-Escape-0.005",
+      "status": "pass"
+    },
+    {
+      "distribution": "Scope-Cleanup",
+      "release": "Scope-Cleanup-0.003",
+      "status": "pass"
+    },
+    {
+      "distribution": "Cond-Expr",
+      "release": "Cond-Expr-0.05",
+      "status": "pass"
+    },
+    {
+      "distribution": "JSON-XS-Sugar",
+      "release": "JSON-XS-Sugar-1.01",
+      "status": "existing_failure"
+    },
+    {
+      "distribution": "Params-Lazy",
+      "release": "Params-Lazy-0.005",
+      "status": "existing_failure"
+    },
+    {
+      "distribution": "B-CallChecker",
+      "release": "B-CallChecker-0.001",
+      "status": "pass"
+    },
+    {
+      "distribution": "Parse-Perl",
+      "release": "Parse-Perl-0.007",
+      "status": "existing_failure"
+    },
+    {
+      "distribution": "Scope-Escape-Sugar",
+      "release": "Scope-Escape-Sugar-0.002",
+      "status": "existing_failure"
+    }
+  ],
+  "notes": [
+    "All four non-pass candidate results were re-run against the unmodified cpan-0.009 tag in the same Perl 5.40.1 / darwin-thread-multi-2level environment and reproduced with exit code 1.",
+    "The four existing failures are downstream XS build incompatibilities with Perl 5.40 internals observed in JSON-XS-Sugar, Params-Lazy, Parse-Perl, and Scope-Escape-Sugar.",
+    "This file records the classified baseline; detailed cpanm work logs are intentionally not committed."
+  ]
+}
