@@ -89,7 +89,7 @@ print {$sfh} JSON::PP->new->canonical->pretty->encode({
 });
 close $sfh;
 print "wrote $summary_file\n";
-exit grep({ $_->{status} ne "pass" } @summary) ? 1 : 0;
+exit(grep({ $_->{status} ne "pass" } @summary) ? 1 : 0);
 
 sub run_or_die {
     my ($log, $env, @cmd) = @_;
