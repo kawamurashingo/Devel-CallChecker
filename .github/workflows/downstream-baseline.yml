@@ -43,6 +43,18 @@ jobs:
           perl maint/downstream/run-downstream.pl \
             --candidate "$RUNNER_TEMP/dcc-cpan-0.009"
 
+      - name: Preserve cpanm failure logs
+        if: always()
+        run: |
+          mkdir -p maint/downstream/results/cpanm
+          if [ -d "$HOME/.cpanm/work" ]; then
+            find "$HOME/.cpanm/work" -name build.log -type f -print0 |
+              while IFS= read -r -d '' log; do
+                workdir=$(basename "$(dirname "$log")")
+                cp "$log" "maint/downstream/results/cpanm/$workdir-build.log"
+              done
+          fi
+
       - name: Preserve results
         if: always()
         uses: actions/upload-artifact@v4
