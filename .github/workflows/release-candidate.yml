@@ -15,13 +15,12 @@ jobs:
         run: |
           curl -L https://cpanmin.us | perl - App::cpanminus
           cpanm --notest --installdeps .
-          cpanm --notest Module::Signature
       - name: Build, test, and package
         run: |
           perl Build.PL
           ./Build
           ./Build test
-          ./Build dist
+          ./Build dist --skip-signature
       - name: Inspect distribution metadata
         run: |
           set -euo pipefail
