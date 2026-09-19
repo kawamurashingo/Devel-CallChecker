@@ -67,3 +67,15 @@ This matrix is a maintenance baseline, not a new statement of minimum supported 
 The remaining representative baseline versions are run by `.github/workflows/downstream-baseline.yml` on Linux using Perl 5.16, 5.24, and 5.32. The workflow checks out the tagged `cpan-0.009` source into a separate worktree, runs the frozen downstream inventory, and uploads the generated `results/` directory for classification.
 
 A non-pass downstream result does not by itself fail the workflow job: the raw result artifact must be reviewed and classified. Reviewed classifications belong in `baselines/`; generated CI output does not.
+
+
+## Recorded representative baselines
+
+The reviewed maintenance baseline now covers the representative matrix selected for this repository:
+
+- Perl 5.16.3 / Linux x86_64
+- Perl 5.24.4 / Linux x86_64
+- Perl 5.32.1 / Linux x86_64
+- Perl 5.40.1 / macOS darwin-thread-multi-2level
+
+These are maintenance/testing baselines, not a declaration of a new minimum supported Perl version.
