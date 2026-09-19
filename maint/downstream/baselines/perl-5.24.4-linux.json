@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "snapshot_date": "2026-09-19",
+  "environment": {
+    "perl": "5.24.4",
+    "os": "linux",
+    "archname": "x86_64-linux"
+  },
+  "baseline_tag": "cpan-0.009",
+  "summary": {
+    "pass": 9,
+    "existing_failure": 3,
+    "candidate_regression": 0,
+    "blocked": 0
+  },
+  "results": [
+    {"distribution":"Enum-Declare","release":"Enum-Declare-0.08","status":"pass"},
+    {"distribution":"Devel-CallParser","release":"Devel-CallParser-0.004","status":"pass"},
+    {"distribution":"List-Gather","release":"List-Gather-0.14","status":"pass"},
+    {"distribution":"Memoize-Once","release":"Memoize-Once-0.002","status":"pass"},
+    {"distribution":"Scope-Escape","release":"Scope-Escape-0.005","status":"pass"},
+    {"distribution":"Scope-Cleanup","release":"Scope-Cleanup-0.003","status":"pass"},
+    {"distribution":"Cond-Expr","release":"Cond-Expr-0.05","status":"pass"},
+    {"distribution":"JSON-XS-Sugar","release":"JSON-XS-Sugar-1.01","status":"pass"},
+    {"distribution":"Params-Lazy","release":"Params-Lazy-0.005","status":"existing_failure"},
+    {"distribution":"B-CallChecker","release":"B-CallChecker-0.001","status":"pass"},
+    {"distribution":"Parse-Perl","release":"Parse-Perl-0.007","status":"existing_failure"},
+    {"distribution":"Scope-Escape-Sugar","release":"Scope-Escape-Sugar-0.002","status":"existing_failure"}
+  ],
+  "notes": [
+    "The candidate is the unmodified Devel-CallChecker 0.009 import commit; therefore the three non-pass downstream results are baseline existing failures, not candidate regressions.",
+    "Params-Lazy, Parse-Perl, and Scope-Escape-Sugar fail their own test/build paths in this Perl 5.24.4 / x86_64-linux environment.",
+    "Detailed cpanm build logs were preserved in the GitHub Actions artifact for workflow run 35442040388 and are not committed here."
+  ]
+}
