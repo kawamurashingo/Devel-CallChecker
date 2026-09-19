@@ -26,6 +26,13 @@ GetOptions(
 ) or usage();
 usage() if $help;
 
+# Resolve runner-owned paths before any candidate build chdir.  Otherwise
+# relative log paths are interpreted from an external --candidate directory.
+my $launch_dir = getcwd();
+$inventory = File::Spec->rel2abs($inventory, $launch_dir);
+$work      = File::Spec->rel2abs($work,      $launch_dir);
+$results   = File::Spec->rel2abs($results,   $launch_dir);
+
 -d $candidate or die "candidate directory not found: $candidate\n";
 $candidate = abs_path($candidate);
 my $candidate_version = candidate_version($candidate);
